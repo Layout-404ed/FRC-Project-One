@@ -13,8 +13,12 @@ public class Robot extends TimedRobot {
 
   private final RobotContainer m_robotContainer;
 
+  //* Declare Motors here
+
   public Robot() {
     m_robotContainer = new RobotContainer();
+    
+    //* Init Motors here
   }
 
   @Override
@@ -54,7 +58,9 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    //* Make Motors Do stuff here
+  }
 
   @Override
   public void teleopExit() {}
