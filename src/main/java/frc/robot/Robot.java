@@ -4,10 +4,14 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
+
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -19,11 +23,25 @@ public class Robot extends TimedRobot {
   //* Declare Motors here
   TalonFX myMoter = new TalonFX(0); // deviceID used to differentiate between motors, can find in tuner x
 
+  TalonFX primaryMotor = new TalonFX(1);
+  TalonFX followerMotor1 = new TalonFX(2);
+  TalonFX followerMotor2 = new TalonFX(3);
+
+  TalonFX leftMotor = new TalonFX(4);
+  TalonFX rightMotor = new TalonFX(5);
+
   public Robot() {
     m_robotContainer = new RobotContainer();
     
     //* Init Motors here
     myMoter.getConfigurator().apply(new TalonFXConfiguration()); // reset the motor to its factory default config
+
+    primaryMotor.getConfigurator().apply(new TalonFXConfiguration());
+    followerMotor1.getConfigurator().apply(new TalonFXConfiguration());
+    followerMotor2.getConfigurator().apply(new TalonFXConfiguration());
+
+    leftMotor.getConfigurator().apply(new TalonFXConfiguration());
+    rightMotor.getConfigurator().apply(new TalonFXConfiguration());
 
     // config the current of the motor (so it doesn't blow up)
     var currentConfig = new CurrentLimitsConfigs();
@@ -32,7 +50,25 @@ public class Robot extends TimedRobot {
 
     // refreshing then appying currentConfig
     myMoter.getConfigurator().refresh(currentConfig);
+    primaryMotor.getConfigurator().refresh(currentConfig);
+    followerMotor1.getConfigurator().refresh(currentConfig);
+    followerMotor2.getConfigurator().refresh(currentConfig);
+    leftMotor.getConfigurator().refresh(currentConfig);
+    rightMotor.getConfigurator().refresh(currentConfig);
+
     myMoter.getConfigurator().apply(currentConfig);
+    primaryMotor.getConfigurator().apply(currentConfig);
+    followerMotor2.getConfigurator().apply(currentConfig);
+    followerMotor2.getConfigurator().apply(currentConfig);
+    leftMotor.getConfigurator().apply(currentConfig);
+    rightMotor.getConfigurator().apply(currentConfig);
+
+    // configure the follower motors
+    followerMotor1.setControl(new Follower(1, MotorAlignmentValue.Aligned)); // no longer a boolean for invert
+    followerMotor1.setControl(new Follower(1, MotorAlignmentValue.Aligned)); // now is MotorAlignmentValue.Aligned
+
+    // rightMotor.setInverted(true); //! no longer works, ig was removed
+    rightMotor.setControl(new Follower(4, MotorAlignmentValue.Opposed)); // is the way to do it now
   }
 
   @Override
@@ -74,7 +110,12 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     //* Make Motors Do stuff here
-    myMoter.set(.5); // range between -1.0 - 1.0 (percent, - = reveerse)
+    myMoter.set(.5); // range between -1.0 - 1.0 (percent, - = reverse)
+
+    primaryMotor.set(.5); // dont need to set for followers, will automatically since they are following this
+
+    leftMotor.set(.5);
+    // rightMotor.set(.5); //! no longer needed cus the other function doesnt work so i just made it an inverted follower
   }
 
   @Override
