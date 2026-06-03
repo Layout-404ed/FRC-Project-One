@@ -12,6 +12,7 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -30,6 +31,9 @@ public class Robot extends TimedRobot {
   TalonFX leftMotor = new TalonFX(4);
   TalonFX rightMotor = new TalonFX(5);
 
+  int robotIncrementer = 0;
+  int teleopIncrementer = 0;
+
   public Robot() {
     m_robotContainer = new RobotContainer();
     
@@ -47,6 +51,7 @@ public class Robot extends TimedRobot {
     var currentConfig = new CurrentLimitsConfigs();
     currentConfig.StatorCurrentLimit = 80; // amps
     currentConfig.StatorCurrentLimitEnable = true;
+    //! SIM DOESN'T REALLY FOLLOW THIS WHICH WILL LEAD TO WRONG PERCENT OUTS, SIM STILL GUD THO FOR OTHER THINGS
 
     // refreshing then appying currentConfig
     myMoter.getConfigurator().refresh(currentConfig);
@@ -69,11 +74,24 @@ public class Robot extends TimedRobot {
 
     // rightMotor.setInverted(true); //! no longer works, ig was removed
     rightMotor.setControl(new Follower(4, MotorAlignmentValue.Opposed)); // is the way to do it now
+
+    SmartDashboard.putString("First Printout", "Hello, world!"); //! shuffleboard is deprecated, open Elastic
+    // key = title (better to have in caps), value = text under it
+    //* To see in Elastic, click add widget, smart dashboard, and you should see it there
+
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+
+    //* Typically wana put SmartDashboard stuff here that way it constantly updates no matter what
+    SmartDashboard.putNumber("ROBOT INCREMENTER", robotIncrementer++);
+
+    SmartDashboard.putNumber("PRIMARY MOTOR PERCENT OUT", primaryMotor.get());
+    // can view as graph by right clicking, show as, graph, can view the voltage as voltage bar by same method
+    SmartDashboard.putNumber("PRIMARY MOTOR VOLTAGE", primaryMotor.getMotorVoltage().getValueAsDouble()); // need get as double since obj technically contains more info than just a double
+    
   }
 
   @Override
@@ -116,6 +134,9 @@ public class Robot extends TimedRobot {
 
     leftMotor.set(.5);
     // rightMotor.set(.5); //! no longer needed cus the other function doesnt work so i just made it an inverted follower
+
+    SmartDashboard.putNumber("TELEOP INCREMENTER", teleopIncrementer++); //* Will only show when teleop is enabled (as expected)
+
   }
 
   @Override
